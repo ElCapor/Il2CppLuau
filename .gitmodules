@@ -1,0 +1,6 @@
+[submodule "extern/vendor/luau"]
+	path = extern/vendor/luau
+	url = https://github.com/luau-lang/luau.git
+[submodule "extern/vendor/UnityResolve"]
+	path = extern/vendor/UnityResolve
+	url = https://github.com/issuimo/UnityResolve.hpp.git

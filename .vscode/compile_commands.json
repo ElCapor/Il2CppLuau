@@ -1,0 +1,6 @@
+[
+{
+  "directory": "c:\\Users\\HP\\Desktop\\Programming\\Il2CppLua",
+  "arguments": ["C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.37.32822\\bin\\HostX64\\x64\\cl.exe", "/c", "/nologo", "/O2", "/fp:fast", "/Iextern\\vendor", "/Iextern\\include", "/EHsc", "/IC:\\Users\\HP\\Desktop\\Programming\\Il2CppLua\\build\\.packages\\h\\hookmanager\\latest\\b1caf5aecf3447d1bfaf66081135de32\\extern\\vendor\\HookManager", "/DNDEBUG", "/Fobuild\\.objs\\Il2CppLuau\\windows\\x64\\release\\src\\main.cpp.obj", "src\\main.cpp", "-imsvc", "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.22621.0\\cppwinrt", "-imsvc", "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.22621.0\\km", "-imsvc", "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.22621.0\\shared", "-imsvc", "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.22621.0\\ucrt", "-imsvc", "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.22621.0\\um", "-imsvc", "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.22621.0\\winrt", "-imsvc", "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.37.32822\\include"],
+  "file": "src\\main.cpp"
+}]

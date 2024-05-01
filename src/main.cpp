@@ -1,35 +1,40 @@
 #include <Windows.h>
 #include <iostream>
+#include <string>
+#include <vector>
 #include <luau/VM/include/lua.h>
 #include <luau/VM/include/lualib.h>
 #include <HookManager/include/HookManager.hpp>
+#include "ui/ui.hpp"
+#include "globals/globals.hpp"
+#include "utils/singleton.hpp"
+#include "utils/progress_manager.hpp"
+#include "utils/console/console.hpp"
 using H = HookManager;
+
+ProgressManager m_InitProgress(3);
 DWORD WINAPI MainThread()
 {
-    AllocConsole();
-    FILE* f;
-    freopen_s(&f, "CONOUT$", "w", stdout);
-    freopen_s(&f, "CONIN$", "r", stdin);
-
-    std::cout << "Hello, World !" << std::endl;
-    lua_State* L = luaL_newstate();
-
+    
+    Console::get()->open();
+    Console::get()->log("IL2CppLuau Started !");
+    m_InitProgress.Step("Created console !");
+    ui::HookDX11();
+    m_InitProgress.Step("Started DX HOOK");
+    m_InitProgress.Step("Done");
     std::cin.ignore();
     return 0;
 }
 
-BOOL WINAPI DllMain(
-    HINSTANCE hinstDLL,  // handle to DLL module
-    DWORD fdwReason,     // reason for calling function
-    LPVOID lpvReserved)  // reserved
+BOOL APIENTRY DllMain(
+    HMODULE hModule,    // handle to DLL module
+    DWORD fdwReason,    // reason for calling function
+    LPVOID lpvReserved) // reserved
 {
-    // Perform actions based on the reason for calling.
     switch (fdwReason)
     {
     case DLL_PROCESS_ATTACH:
-        // Initialize once for each new process.
-        // Return FALSE to fail DLL load.
-        DisableThreadLibraryCalls(hinstDLL); // Opt-out of thread attach and detach notifications
+        GlobalsManager::get()->HModule() = hModule;
         CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)MainThread, nullptr, 0, nullptr); // Start the main thread
         break;
 
@@ -51,5 +56,5 @@ BOOL WINAPI DllMain(
         // Perform any necessary cleanup.
         break;
     }
-    return TRUE;  // Successful DLL_PROCESS_ATTACH.
+    return TRUE; // Successful DLL_PROCESS_ATTACH.
 }

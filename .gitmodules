@@ -4,3 +4,6 @@
 [submodule "extern/vendor/UnityResolve"]
 	path = extern/vendor/UnityResolve
 	url = https://github.com/issuimo/UnityResolve.hpp.git
+[submodule "extern/vendor/imgui"]
+	path = extern/vendor/imgui
+	url = https://github.com/ocornut/imgui.git

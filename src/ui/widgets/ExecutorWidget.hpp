@@ -4,6 +4,7 @@
 #include "../../utils/console/console.hpp"
 
 #include <texteditor/TextEditor.h>
+#include "../../lua/LuaVM.hpp"
 class ExecutorWidget : public Widget, public Singleton<ExecutorWidget>
 {
     TextEditor editor;
@@ -15,12 +16,13 @@ class ExecutorWidget : public Widget, public Singleton<ExecutorWidget>
     }
     void Render() override
     {
-        ImGui::ShowDemoWindow();
         if (ImGui::Begin("Editor"))
         {
             if (ImGui::Button("execute"))
             {
-                Console::get()->log("kys");
+                auto str = LuaVM::get()->executeScript(editor.GetText());
+                if (str != "")
+                    Console::get()->error(str);
             }
             editor.Render("Executor");
             ImGui::End();

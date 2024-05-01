@@ -45,5 +45,7 @@ target("Il2CppLuau")
     add_includedirs("extern/vendor")
     add_includedirs("extern/include")
     add_links("extern/vendor/HookManager/lib/detours", "user32")
+    add_includedirs("extern/vendor/luau/VM/include")
+    add_includedirs("extern/vendor/luau/Compiler/include", "extern/vendor/luau/Common/include", "extern/vendor/luau/Ast/include")
     add_packages("luau")
     -- TODO : Add source dir from package

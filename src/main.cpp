@@ -10,18 +10,25 @@
 #include "utils/singleton.hpp"
 #include "utils/progress_manager.hpp"
 #include "utils/console/console.hpp"
+#include <texteditor/TextEditor.h>
+#include <UnityResolve/UnityResolve.hpp>
 using H = HookManager;
 
-ProgressManager m_InitProgress(3);
+
+
+ProgressManager m_InitProgress(4);
 DWORD WINAPI MainThread()
 {
     
     Console::get()->open();
-    Console::get()->log("IL2CppLuau Started !");
     m_InitProgress.Step("Created console !");
+    ui::RegisterWidgets();
+    m_InitProgress.Step("Registered Widgets");
     ui::HookDX11();
-    m_InitProgress.Step("Started DX HOOK");
-    m_InitProgress.Step("Done");
+    m_InitProgress.Step("Created DX HOOK");
+    UnityResolve::Init(GetModuleHandleW(L"GameAssembly.dll"), UnityResolve::Mode::Il2Cpp);
+    m_InitProgress.Step("Initiated UnityResolve.hpp");
+    Console::get()->log("IL2CppLuau Started !");
     std::cin.ignore();
     return 0;
 }

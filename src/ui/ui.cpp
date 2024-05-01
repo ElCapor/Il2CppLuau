@@ -3,9 +3,10 @@
 #include <imgui/backends/imgui_impl_win32.h>
 #include <imgui/backends/imgui_impl_dx11.h>
 #include "../globals/globals.hpp"
+#include <iostream>
 #include "ui.hpp"
 extern auto ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) -> LRESULT;
-
+std::vector<Widget*> ui::m_Widgets = {};
 void ui::InitUi()
 {
     if (!GlobalsManager::get()->IsGuiReady())
@@ -149,7 +150,10 @@ void ui::InitUi()
         styles.WindowPadding = ImVec2(8.0, 8.0);
         styles.WindowRounding = 0.0;
         styles.WindowTitleAlign = ImVec2(0.0, 0.5);
-
+        for (auto& widget : m_Widgets)
+        {
+            widget->Init();
+        }
         GlobalsManager::get()->IsGuiReady() = true;
     }
 
@@ -158,7 +162,10 @@ void ui::InitUi()
     ImGui::NewFrame();
     if (GlobalsManager::get()->ShowGui())
     {
-        ImGui::ShowDemoWindow();
+        for (auto& widget : m_Widgets)
+        {
+            widget->Render();
+        }
     }
     ImGui::EndFrame();
     ImGui::Render();
@@ -171,3 +178,9 @@ void ui::HookDX11()
 {
     dx_hook::Hk11::Build(ui::InitUi);
 };
+
+#include "widgets/ExecutorWidget.hpp"
+void ui::RegisterWidgets()
+{
+    m_Widgets.push_back(ExecutorWidget::get());
+}

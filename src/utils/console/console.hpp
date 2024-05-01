@@ -1,3 +1,4 @@
+#pragma once
 #ifndef dbg
 #define dbg
 #define DEBUG_MODE

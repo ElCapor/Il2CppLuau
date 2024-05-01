@@ -7,3 +7,6 @@
 [submodule "extern/vendor/imgui"]
 	path = extern/vendor/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "extern/vendor/texteditor"]
+	path = extern/vendor/texteditor
+	url = https://github.com/ElCapor/ImGuiColorTextEdit.git

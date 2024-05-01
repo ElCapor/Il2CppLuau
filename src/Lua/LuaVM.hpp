@@ -12,7 +12,6 @@
 #include <luau/VM/src/lfunc.h>
 #include <luau/Compiler/include/luacode.h>
 #include <luau/Common/include/Luau/Common.h>
-
 struct LuaVMOptions {
     bool debug = false;
     bool register_functions = true;

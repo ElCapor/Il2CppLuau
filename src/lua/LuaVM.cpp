@@ -6,6 +6,8 @@
 #include <luau/VM/src/lobject.h>
 #include <luau/VM/src/lapi.h>
 #include <iostream>
+#include "bridge/il2cpp_bridge.h"
+
 
 LuaVM::LuaVM() {}
 
@@ -23,7 +25,9 @@ void LuaVM::SetupState(lua_State *L) {
         luaL_sandbox(L);
 }
 
-void LuaVM::RegisterFunctions(lua_State *L) {}
+void LuaVM::RegisterFunctions(lua_State *L) {
+    lua_bindings::register_il2cpp_bridge(L);
+}
 
 static Luau::CompileOptions copts()
 {
@@ -118,7 +122,7 @@ std::string LuaVM::executeScript(std::string script) {
 
     // static string for caching result (prevents dangling ptr on function exit)
     static std::string result;
-
+    RegisterFunctions(L);
     // run code + collect error
     result = runCode(L, script);
 

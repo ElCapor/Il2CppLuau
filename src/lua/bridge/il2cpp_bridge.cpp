@@ -10,6 +10,37 @@
 #define FIELD_MT_NAME "field.mt"
 #define METHOD_MT_NAME "method.mt"
 
+
+int index_field(lua_State* L)
+{
+    return 0;
+}
+
+static const luaL_Reg field_m[]
+{
+    {"__index", index_field},{NULL, NULL}
+};
+
+int index_method(lua_State* L)
+{
+    const char* key = lua_tostring(L, -1);
+    if (lua_isuserdata(L, -2))
+    {
+        if (strcmp(key, "name") == 0)
+        {
+            auto cls = (UnityResolve::Method*)lua_tolightuserdata(L, -2);
+            lua_pushstring(L, cls->name.c_str());
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static const luaL_Reg method_m[]
+{
+    {"__index", index_method}, {NULL, NULL}
+};
+
 int newindex_class(lua_State* L)
 {
     return 0;
@@ -24,6 +55,20 @@ int index_class(lua_State* L)
         {
             auto cls = (UnityResolve::Class*)lua_tolightuserdata(L, -2);
             lua_pushstring(L, cls->name.c_str());
+            return 1;
+        } else if (strcmp(key, "methods") == 0)
+        {
+            auto cls = (UnityResolve::Class*)lua_tolightuserdata(L, -2);
+            int idx=1;
+            lua_newtable(L);
+            for (auto& pMethod : cls->methods)
+            {
+                lua_pushlightuserdata(L, pMethod);
+                luaL_getmetatable(L, METHOD_MT_NAME);
+                lua_setmetatable(L, -2);
+                lua_rawseti(L, -2, idx);
+                idx++;
+            }
             return 1;
         }
     }
@@ -56,7 +101,6 @@ int index_assembly(lua_State *L)
             }
         } else if (strcmp(key, "classes") == 0)
         {
-            
             int idx=1;
             lua_newtable(L);
             for (auto& pClass : assembly->classes)
@@ -77,8 +121,6 @@ int get_assembly(lua_State* L)
 {
     Console::get()->log("-1 -> ", luaL_typename(L, -1));
     Console::get()->log("-2 -> ", luaL_typename(L, -2));
-
-
     return 0;
 }
 
@@ -145,6 +187,8 @@ int lua_bindings::register_il2cpp_bridge(lua_State* L)
 {
     create_lua_mt(L, ASSEMBLY_MT_NAME, assembly_m);
     create_lua_mt(L, CLASS_MT_NAME, class_m);
+    create_lua_mt(L, FIELD_MT_NAME, field_m);
+    create_lua_mt(L, METHOD_MT_NAME, method_m);
     create_lua_mt(L, IL2CPP_MT_NAME, il2cpp_m);
     lua_newtable(L);
     luaL_getmetatable(L, IL2CPP_MT_NAME);

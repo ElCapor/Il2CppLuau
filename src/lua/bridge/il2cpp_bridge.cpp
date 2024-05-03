@@ -3,6 +3,7 @@
 #include "lua.h"
 #include "../../utils/console/console.hpp"
 #include <UnityResolve/UnityResolve.hpp>
+#include "../lextra.h"
 
 #define ASSEMBLY_MT_NAME "assembly.mt"
 #define IL2CPP_MT_NAME "il2cpp.mt"
@@ -64,34 +65,6 @@ std::pair<int, bool> indexFields(lua_State *L, const luaL_Reg *fields)
     }
     return std::make_pair<int, bool>(0, false); // no fields were processed
 }
-
-/// @brief Checks if there is a lightuserdata at the specified index
-/// @tparam T type of the lightuserdata to return
-/// @param L Lua State
-/// @param idx index of the userdata
-/// @return a pointer to an object or else nullptr
-template <typename T>
-T *luaL_checklightuserdata(lua_State *L, int idx)
-{
-    if (lua_isuserdata(L, idx))
-    {
-        void *ptr = lua_tolightuserdata(L, idx);
-        if (ptr != nullptr)
-        {
-            return static_cast<T *>(ptr);
-        }
-        else
-        {
-            return nullptr;
-        }
-    }
-    else
-    {
-        return nullptr;
-    }
-}
-
-
 
 /// @brief __index of method metatable
 /// @param L Lua State
@@ -282,35 +255,9 @@ int index_il2cpp(lua_State *L)
 }
 
 static const luaL_Reg il2cpp_m[] =
-    {
-        {"__newindex", newindex_il2cpp}, {"__index", index_il2cpp}, {NULL, NULL}};
-
-/// @brief Creates a new lua metatable based on the provided functions
-/// @param L Lua State
-/// @param mt_name name of the metatable
-/// @param m_reg array of functions
-void create_lua_mt(lua_State *L, const char *mt_name, const luaL_Reg *m_reg)
 {
-    luaL_newmetatable(L, mt_name);
-
-    for (const luaL_Reg *method = m_reg; method->name != NULL; method++)
-    {
-        lua_pushstring(L, method->name);
-        lua_pushcfunction(L, method->func, method->name);
-        lua_settable(L, -3);
-    }
-}
-/// @brief registers a global table with a given metatable
-/// @param L Lua State
-/// @param table_name the global name of the table
-/// @param mt_name the metatable of the table
-void register_global_table_with_mt(lua_State *L, const char *table_name, const char *mt_name)
-{
-    lua_newtable(L);
-    luaL_getmetatable(L, mt_name);
-    lua_setmetatable(L, -2);
-    lua_setglobal(L, table_name);
-}
+    {"__newindex", newindex_il2cpp}, {"__index", index_il2cpp}, {NULL, NULL}
+};
 
 /// @brief Registers il2cpp library in lua
 /// @param L Lua State

@@ -13,9 +13,12 @@ class Widget {
     void setId(int id) {this->id = id;}
     int& getId() {return id;}
 
+    bool& IsInit() {return isInit;}
+
     private:
     std::string name;
     int id;
+    bool isInit = false;
 };
 
 #endif

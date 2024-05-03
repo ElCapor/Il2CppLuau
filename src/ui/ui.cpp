@@ -150,10 +150,6 @@ void ui::InitUi()
         styles.WindowPadding = ImVec2(8.0, 8.0);
         styles.WindowRounding = 0.0;
         styles.WindowTitleAlign = ImVec2(0.0, 0.5);
-        for (auto& widget : m_Widgets)
-        {
-            widget->Init();
-        }
         GlobalsManager::get()->IsGuiReady() = true;
     }
 
@@ -164,6 +160,11 @@ void ui::InitUi()
     {
         for (auto& widget : m_Widgets)
         {
+            if (!widget->IsInit())
+            {
+                widget->Init();
+                widget->IsInit() = true;
+            }
             widget->Render();
         }
     }

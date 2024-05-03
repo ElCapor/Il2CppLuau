@@ -15,7 +15,6 @@
 using H = HookManager;
 
 
-
 ProgressManager m_InitProgress(4);
 DWORD WINAPI MainThread()
 {

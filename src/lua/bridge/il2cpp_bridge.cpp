@@ -4,66 +4,20 @@
 #include "../../utils/console/console.hpp"
 #include <UnityResolve/UnityResolve.hpp>
 #include "../lextra.h"
-
+#include "../mt_map.h"
 #define ASSEMBLY_MT_NAME "assembly.mt"
 #define IL2CPP_MT_NAME "il2cpp.mt"
 #define CLASS_MT_NAME "class.mt"
 #define FIELD_MT_NAME "field.mt"
 #define METHOD_MT_NAME "method.mt"
 
-/// @brief Creates a table on the stack with all the content of a vector of type T* like a list
-/// @tparam T type of the vector
-/// @param L Lua State
-/// @param vec The std::vector
-/// @return 1 if success (table on the stack) else 0
-template <typename T>
-int vec2table(lua_State *L, std::vector<T *> vec)
+/// @brief Bind all metatables of the bridge globally
+void bindMt()
 {
-    // better return nil if table is empty, allows to perform bool checks
-    if (vec.size() > 0)
-    {
-        int idx = 1; // lua indexes start at 1
-        lua_newtable(L);
-        for (auto &pObj : vec)
-        {
-            lua_pushlightuserdata(L, pObj);
-            if constexpr (std::is_same_v<T, UnityResolve::Assembly>)
-                luaL_getmetatable(L, ASSEMBLY_MT_NAME);
-            else if constexpr (std::is_same_v<T, UnityResolve::Class>)
-                luaL_getmetatable(L, CLASS_MT_NAME);
-            else if constexpr (std::is_same_v<T, UnityResolve::Method>)
-                luaL_getmetatable(L, METHOD_MT_NAME);
-            else if constexpr (std::is_same_v<T, UnityResolve::Field>)
-                luaL_getmetatable(L, FIELD_MT_NAME);
-            else
-            {
-                Console::get()->error("Can't convert type ", typeid(T).name(), " to table");
-                return 0;
-            }
-            lua_setmetatable(L, -2);
-            lua_rawseti(L, -2, idx);
-            idx++;
-        }
-        return 1;
-    }
-    return 0;
-}
-
-/// @brief index fields for a metatable based on predefined fields along their functions
-/// @param L Lua State
-/// @param fields the luaL_Reg* array containing the field names and associated functions
-/// @return (int,bool) where int is the number of items on the stack , and bool tells if any field was processed
-std::pair<int, bool> indexFields(lua_State *L, const luaL_Reg *fields)
-{
-    const char *key = luaL_checkstring(L, -1);
-    for (const luaL_Reg *field = fields; field->name != NULL; field++)
-    {
-        if (strcmp(key, field->name) == 0)
-        {
-            return std::make_pair<int, bool>(field->func(L), true); // field was processed
-        }
-    }
-    return std::make_pair<int, bool>(0, false); // no fields were processed
+    INSERT_MT(UnityResolve::Assembly, ASSEMBLY_MT_NAME);
+    INSERT_MT(UnityResolve::Class, CLASS_MT_NAME);
+    INSERT_MT(UnityResolve::Method, METHOD_MT_NAME);
+    INSERT_MT(UnityResolve::Field, FIELD_MT_NAME);
 }
 
 /// @brief __index of method metatable
@@ -270,5 +224,6 @@ int lua_bindings::register_il2cpp_bridge(lua_State *L)
     create_lua_mt(L, METHOD_MT_NAME, method_m);
     create_lua_mt(L, IL2CPP_MT_NAME, il2cpp_m);
     register_global_table_with_mt(L, "il2cpp", IL2CPP_MT_NAME);
+    bindMt();
     return 0;
 }

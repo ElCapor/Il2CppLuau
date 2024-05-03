@@ -9,6 +9,7 @@ class ExecutorWidget : public Widget, public Singleton<ExecutorWidget>
 {
     TextEditor editor;
     public:
+    ExecutorWidget() { setName("ExecutorWidget");}
     void Init() override
     {
         Console::get()->log("Starting editor widget");
@@ -18,6 +19,7 @@ class ExecutorWidget : public Widget, public Singleton<ExecutorWidget>
     {
         if (ImGui::Begin("Editor"))
         {
+            ImGui::Text(this->getName().c_str());
             if (ImGui::Button("execute"))
             {
                 auto str = LuaVM::get()->executeScript(editor.GetText());

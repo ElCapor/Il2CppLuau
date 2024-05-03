@@ -183,4 +183,10 @@ void ui::HookDX11()
 void ui::RegisterWidgets()
 {
     m_Widgets.push_back(ExecutorWidget::get());
+    int idx = 0;
+    for (auto& widget : m_Widgets)
+    {
+        widget->setId(idx);
+        idx++;
+    }
 }

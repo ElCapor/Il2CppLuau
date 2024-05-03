@@ -11,6 +11,38 @@
 #define METHOD_MT_NAME "method.mt"
 
 
+/// @brief Creates a table on the stack with all the content of a vector of type T* like a list
+/// @tparam T type of the vector
+/// @param L Lua State
+/// @param vec The std::vector
+/// @return 1 if success (table on the stack) else 0
+template <typename T>
+int vec2table(lua_State* L, std::vector<T*> vec)
+{
+    // better return nil if table is empty, allows to perform bool checks
+    if (vec.size() > 0)
+    {
+        int idx=1; // lua indexes start at 1
+        lua_newtable(L);
+        for (auto& pObj : vec)
+        {
+            lua_pushlightuserdata(L, pObj);
+            if constexpr (std::is_same_v<T, UnityResolve::Assembly>)
+                luaL_getmetatable(L, ASSEMBLY_MT_NAME);
+            else
+            {
+                Console::get()->error("Can't convert type ", typeid(T).name() , " to table");
+                return 0;
+            }
+            lua_setmetatable(L, -2);
+            lua_rawseti(L, -2, idx);
+            idx++;
+        }
+        return 1;
+    }
+    return 0;
+}
+
 int index_field(lua_State* L)
 {
     return 0;
@@ -131,17 +163,7 @@ static const luaL_Reg assembly_m[]
 
 int assemblies_il2cpp(lua_State* L)
 {
-    int idx=1;
-    lua_newtable(L);
-    for (auto& pAssembly : UnityResolve::assembly)
-    {
-        lua_pushlightuserdata(L, pAssembly);
-        luaL_getmetatable(L, ASSEMBLY_MT_NAME);
-        lua_setmetatable(L, -2);
-        lua_rawseti(L, -2, idx);
-        idx++;
-    }
-    return 1;
+    return vec2table<UnityResolve::Assembly>(L, UnityResolve::assembly);
 }
 static const luaL_Reg il2cpp_fields[]
 {

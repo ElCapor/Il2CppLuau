@@ -8,3 +8,14 @@ git clone https://github.com/ElCapor/Il2CppLuau.git --recursive
 cd Il2CppLuau
 xmake
 ```
+# UML Diagram
+Represents the current architecture of the project.
+
+```
+// conventions
+// <state> = namespace
+// <abstract> = virtual class
+// + method
+// only exposed & public functions are documented
+```
+![Class diagram](diagram.png)

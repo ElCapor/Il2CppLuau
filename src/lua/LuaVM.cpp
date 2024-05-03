@@ -7,6 +7,7 @@
 #include <luau/VM/src/lapi.h>
 #include <iostream>
 #include "bridge/il2cpp_bridge.h"
+#include "bridge/ui_bridge.h"
 
 
 LuaVM::LuaVM() {}
@@ -27,6 +28,7 @@ void LuaVM::SetupState(lua_State *L) {
 
 void LuaVM::RegisterFunctions(lua_State *L) {
     lua_bindings::register_il2cpp_bridge(L);
+    lua_bindings::register_ui_bridge(L);
 }
 
 static Luau::CompileOptions copts()

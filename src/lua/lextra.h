@@ -50,7 +50,7 @@ std::pair<int, bool> indexFields(lua_State *L, const luaL_Reg *fields);
 template <typename T>
 int vec2table(lua_State *L, std::vector<T *> vec)
 {
-    // better return nil if table is empty, allows to perform bool checks
+    // better return nil if vec is empty, allows to perform bool checks
     if (vec.size() > 0)
     {
         int idx = 1; // lua indexes start at 1

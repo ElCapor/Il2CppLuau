@@ -4,6 +4,7 @@
 #include "ui_bridge.h"
 #include "../lextra.h"
 #include "../../ui/ui.hpp"
+#include "../mt_map.h"
 
 #define WIDGET_MT "widget.mt"
 #define UI_MT "ui.mt"
@@ -25,9 +26,39 @@
 * 
 * */
 
+void bindUiMt()
+{
+    INSERT_MT(Widget, WIDGET_MT);
+    metatableMap()["ui"] = UI_MT;
+}
+
+int widget_name(lua_State* L)
+{
+    auto widget = luaL_checklightuserdata<Widget>(L, -2);
+    if (widget != nullptr)
+    {
+        lua_pushstring(L, widget->getName().c_str());
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+int widget_id(lua_State* L)
+{
+    auto widget = luaL_checklightuserdata<Widget>(L, -2);
+    if (widget != nullptr)
+    {
+        lua_pushinteger(L, widget->getId());
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 static const luaL_Reg widget_fields[]
 {
-    {"name"}, {"id"},{NULL, NULL}
+    {"name", widget_name}, {"id", widget_id},{NULL, NULL}
 };
 
 int widget_index(lua_State* L)
@@ -45,8 +76,7 @@ static const luaL_Reg widget_m[]
 
 int widgets_ui(lua_State* L)
 {
-    
-    return 0;
+    return vec2table<Widget>(L, ui::m_Widgets);
 }
 
 static const luaL_Reg ui_fields[] =
@@ -64,11 +94,12 @@ int ui_index(lua_State* L)
 
 static const luaL_Reg ui_m[]
 {
-   {"__index", } ,{NULL, NULL}
+   {"__index", ui_index} ,{NULL, NULL}
 };
 
 int lua_bindings::register_ui_bridge(lua_State* L)
 {
+    bindUiMt();
     create_lua_mt(L, WIDGET_MT, widget_m);
     create_lua_mt(L, UI_MT, ui_m);
     register_global_table_with_mt(L, "ui", UI_MT);

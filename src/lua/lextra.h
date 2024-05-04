@@ -40,7 +40,8 @@ void create_lua_mt(lua_State *L, const char *mt_name, const luaL_Reg *m_reg);
 
 void register_global_table_with_mt(lua_State *L, const char *table_name, const char *mt_name);
 
-std::pair<int, bool> indexFields(lua_State *L, const luaL_Reg *fields);
+std::pair<int, bool> indexFields(lua_State *L, const luaL_Reg *fields, const char* key);
+std::pair<int, bool> indexFunctions(lua_State *L, const luaL_Reg* functions, const char* key);
 
 /// @brief Creates a table on the stack with all the content of a vector of type T* like a list
 /// @tparam T type of the vector

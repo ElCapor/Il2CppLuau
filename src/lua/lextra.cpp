@@ -33,9 +33,8 @@ void register_global_table_with_mt(lua_State *L, const char *table_name, const c
 /// @param L Lua State
 /// @param fields the luaL_Reg* array containing the field names and associated functions
 /// @return (int,bool) where int is the number of items on the stack , and bool tells if any field was processed
-std::pair<int, bool> indexFields(lua_State *L, const luaL_Reg *fields)
+std::pair<int, bool> indexFields(lua_State *L, const luaL_Reg *fields, const char* key)
 {
-    const char *key = luaL_checkstring(L, -1);
     for (const luaL_Reg *field = fields; field->name != NULL; field++)
     {
         if (strcmp(key, field->name) == 0)
@@ -44,4 +43,20 @@ std::pair<int, bool> indexFields(lua_State *L, const luaL_Reg *fields)
         }
     }
     return std::make_pair<int, bool>(0, false); // no fields were processed
+}
+
+/// @brief index functions for a metatable based on predefined functions along their functions
+/// @param L Lua State
+/// @param fields the luaL_Reg* array containing the lua function names and associated C functions
+/// @return (int,bool) where int is the number of items on the stack , and bool tells if any function was processed
+std::pair<int, bool> indexFunctions(lua_State *L, const luaL_Reg *functions, const char *key)
+{
+    for (const luaL_Reg* func = functions; functions->name != NULL; func++)
+    {
+        if (strcmp(key, func->name) == 0)
+        {
+            return std::make_pair<int, bool>(func->func(L), true); // function was processed
+        }
+    }
+    return std::pair<int, bool>(0, false); // no functions were processed
 }

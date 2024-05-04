@@ -3,12 +3,20 @@
 */
 #include "ui_bridge.h"
 #include "../lextra.h"
-#include "../../ui/ui.hpp"
+#include "../../ui/widgets/LuaWidget.hpp"
 #include "../mt_map.h"
-
+#include <new>
 #define WIDGET_MT "widget.mt"
 #define UI_MT "ui.mt"
 
+
+
+
+void bindUiMt()
+{
+    INSERT_MT(Widget, WIDGET_MT);
+    metatableMap()["ui"] = UI_MT;
+}
 
 /* Representation of a widget as a lua table
 * local widget = {
@@ -26,11 +34,46 @@
 * 
 * */
 
-void bindUiMt()
+int widget_new(lua_State* L)
 {
-    INSERT_MT(Widget, WIDGET_MT);
-    metatableMap()["ui"] = UI_MT;
+    const char* widget_name;
+    lua_CFunction init_func;
+    lua_CFunction render_func;
+    
+    if (lua_istable(L, -2))
+    {
+        if (lua_getfield(L, -2, "name") == LUA_TSTRING)
+        {
+            widget_name = lua_tostring(L, -1);
+        } else{
+            lua_pop(L, -1);
+            return 0;
+        }
+        if (lua_getfield(L, -2, "init") == LUA_TFUNCTION)
+        {
+            init_func = lua_tocfunction(L, -1);
+        } else {
+            lua_pop(L, -1);
+            return 0;
+        }
+        if (lua_getfield(L, -2, "render") == LUA_TFUNCTION)
+        {
+            render_func = lua_tocfunction(L, -1);
+        } else {
+            lua_pop(L, -1);
+            return 0;
+        }
+        LuaWidget* widget = new LuaWidget(widget_name);
+        lua_pushlightuserdata(L, widget);
+        luaL_getmetatable(L, WIDGET_MT);
+        lua_setmetatable(L, -2);
+    }
+    return 0;
 }
+static const luaL_Reg widget_funcs[]
+{
+    {"new", widget_new},{NULL, NULL}
+};
 
 int widget_name(lua_State* L)
 {
@@ -63,7 +106,8 @@ static const luaL_Reg widget_fields[]
 
 int widget_index(lua_State* L)
 {
-    auto ret = indexFields(L, widget_fields);
+    const char* key = luaL_checkstring(L, -1);
+    auto ret = indexFields(L, widget_fields, key);
     if (ret.second)
         return ret.first;
     return 0;
@@ -86,7 +130,8 @@ static const luaL_Reg ui_fields[] =
 
 int ui_index(lua_State* L)
 {
-    auto ret = indexFields(L, ui_fields);
+    const char* key = luaL_checkstring(L, -1);
+    auto ret = indexFields(L, ui_fields, key);
     if (ret.second)
         return ret.first;
     return 0;

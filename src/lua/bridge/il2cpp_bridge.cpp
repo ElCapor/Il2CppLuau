@@ -57,7 +57,8 @@ static const luaL_Reg method_fields[]{
 /// @return number of elements on the stack
 int index_method(lua_State *L)
 {
-    auto ret = indexFields(L, method_fields);
+    const char* key = luaL_checkstring(L, -1);
+    auto ret = indexFields(L, method_fields, key);
     if (ret.second)
         return ret.first;
 
@@ -113,7 +114,8 @@ int newindex_class(lua_State *L)
 /// @return number of elements on the stack
 int index_class(lua_State *L)
 {
-    auto ret = indexFields(L, class_fields);
+    const char* key = luaL_checkstring(L, -1);
+    auto ret = indexFields(L, class_fields, key);
     if (ret.second)
         return ret.first;
     return 0;
@@ -166,7 +168,8 @@ int newindex_assembly(lua_State *L)
 /// @return number of elements on the stack
 int index_assembly(lua_State *L)
 {
-    auto ret = indexFields(L, assembly_fields);
+    const char* key = luaL_checkstring(L, -1);
+    auto ret = indexFields(L, assembly_fields, key);
     if (ret.second)
         return ret.first;
 
@@ -197,7 +200,8 @@ int newindex_il2cpp(lua_State *L)
 /// @return number of elements on the stack
 int index_il2cpp(lua_State *L)
 {
-    auto ret = indexFields(L, il2cpp_fields);
+    const char* key = luaL_checkstring(L, -1);
+    auto ret = indexFields(L, il2cpp_fields, key);
     // a field was processed and maybe has returned something on the stack so
     if (ret.second)
         return ret.first;

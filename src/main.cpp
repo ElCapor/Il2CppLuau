@@ -12,10 +12,11 @@
 #include "utils/console/console.hpp"
 #include <texteditor/TextEditor.h>
 #include <UnityResolve/UnityResolve.hpp>
+#include "Lua/LuaVM.hpp"
 using H = HookManager;
 
 
-ProgressManager m_InitProgress(4);
+ProgressManager m_InitProgress(5);
 DWORD WINAPI MainThread()
 {
     
@@ -27,6 +28,8 @@ DWORD WINAPI MainThread()
     m_InitProgress.Step("Created DX HOOK");
     UnityResolve::Init(GetModuleHandleW(L"GameAssembly.dll"), UnityResolve::Mode::Il2Cpp);
     m_InitProgress.Step("Initiated UnityResolve.hpp");
+    LuaVM::get()->InitVM();
+    m_InitProgress.Step("Started Luau VM");
     Console::get()->log("IL2CppLuau Started !");
     std::cin.ignore();
     return 0;

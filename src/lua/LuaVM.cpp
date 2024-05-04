@@ -14,6 +14,22 @@ LuaVM::LuaVM() {}
 
 LuaVM::~LuaVM() {}
 
+void LuaVM::InitVM()
+{
+    this->luaState = luaL_newstate();
+
+    // setup state
+    SetupState(LuaState());
+
+    // sandbox thread
+    if (this->options.sandbox_libs)
+        luaL_sandboxthread(LuaState());
+
+    // static string for caching result (prevents dangling ptr on function exit)
+    static std::string result;
+    RegisterFunctions(LuaState());
+}
+
 void LuaVM::setOptions(const LuaVMOptions &options) {}
 
 LuaVMOptions &LuaVM::getOptions() {
@@ -111,22 +127,9 @@ std::string LuaVM::executeScript(std::string script) {
     for (Luau::FValue<bool>* flag = Luau::FValue<bool>::list; flag; flag = flag->next)
     if (strncmp(flag->name, "Luau", 4) == 0)
         flag->value = true;
-    
-    std::unique_ptr<lua_State, void (*)(lua_State*)> globalState(luaL_newstate(), lua_close);
-    lua_State* L = globalState.get();
 
-    // setup state
-    SetupState(L);
-
-    // sandbox thread
-    if (this->options.sandbox_libs)
-        luaL_sandboxthread(L);
-
-    // static string for caching result (prevents dangling ptr on function exit)
-    static std::string result;
-    RegisterFunctions(L);
     // run code + collect error
-    result = runCode(L, script);
+    std::string result = runCode(LuaState(), script);
 
     return result.empty() ? "" : result;
 }

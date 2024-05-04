@@ -31,12 +31,18 @@ class LuaVM : public Singleton<LuaVM>
         LuaVM();
         ~LuaVM();
 
+        void InitVM(); // run once
         void setOptions(const LuaVMOptions& options);
         LuaVMOptions& getOptions();
         void SetupState(lua_State* L);
         void RegisterFunctions(lua_State* L);
         std::string runCode(lua_State* L, const std::string& code);
         std::string executeScript(std::string script);
+        lua_State* LuaState() {return luaState;}
+        
+
+    private:
+        lua_State* luaState;
 };
 
 

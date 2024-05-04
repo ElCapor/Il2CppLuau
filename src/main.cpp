@@ -22,14 +22,14 @@ DWORD WINAPI MainThread()
     
     Console::get()->open();
     m_InitProgress.Step("Created console !");
+    LuaVM::get()->InitVM();
+    m_InitProgress.Step("Started Luau VM");
     ui::RegisterWidgets();
     m_InitProgress.Step("Registered Widgets");
     ui::HookDX11();
     m_InitProgress.Step("Created DX HOOK");
     UnityResolve::Init(GetModuleHandleW(L"GameAssembly.dll"), UnityResolve::Mode::Il2Cpp);
     m_InitProgress.Step("Initiated UnityResolve.hpp");
-    LuaVM::get()->InitVM();
-    m_InitProgress.Step("Started Luau VM");
     Console::get()->log("IL2CppLuau Started !");
     std::cin.ignore();
     return 0;

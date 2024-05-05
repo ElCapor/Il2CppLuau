@@ -67,6 +67,7 @@ int widget_new(lua_State* L)
         lua_pushlightuserdata(L, widget);
         luaL_getmetatable(L, WIDGET_MT);
         lua_setmetatable(L, -2);
+        return 1;
     }
     return 0;
 }

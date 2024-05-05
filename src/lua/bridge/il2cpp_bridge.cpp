@@ -98,11 +98,73 @@ static const luaL_Reg type_m[]
     {"__index", index_type},{NULL, NULL}
 };
 
+int field_static(lua_State* L)
+{
+    auto field = luaL_checklightuserdata<UnityResolve::Field>(L, -2);
+    if (field)
+    {
+        lua_pushboolean(L, field->static_field);
+        return 1;
+    }
+    return 0;
+}
+
+int field_offset(lua_State* L)
+{
+    auto field = luaL_checklightuserdata<UnityResolve::Field>(L, -2);
+    if (field)
+    {
+        lua_pushinteger(L, field->offset);
+        return 1;
+    }
+    return 0;
+}
+
+int field_class(lua_State* L)
+{
+    auto field = luaL_checklightuserdata<UnityResolve::Field>(L, -2);
+    if (field)
+    {
+        return luaL_pushlightuserdata<UnityResolve::Class>(L, field->klass);
+    }
+    return 0;
+}
+
+int field_type(lua_State* L)
+{
+    auto field = luaL_checklightuserdata<UnityResolve::Field>(L, -2);
+    if (field)
+    {
+        return luaL_pushlightuserdata<UnityResolve::Type>(L, field->type);
+    }
+    return 0;
+}
+
+int field_name(lua_State* L)
+{
+    auto field = luaL_checklightuserdata<UnityResolve::Field>(L, -2);
+    if (field)
+    {
+        lua_pushstring(L, field->name.c_str());
+        return 1;
+    }
+    return 0;
+}
+static const luaL_Reg field_fields[]
+{
+    {"name", field_name}, {"type", field_type}, {"class", field_class}, {"offset", field_offset}, {"static", field_static},{NULL, NULL}
+};
+
 /// @brief __index of method metatable
 /// @param L Lua State
 /// @return number of elements on the stack
 int index_field(lua_State *L)
 {
+    const char* key = lua_tostring(L, -1);
+    auto ret = indexFields(L, field_fields, key);
+    if (ret.second)
+        return ret.first;
+        
     return 0;
 }
 

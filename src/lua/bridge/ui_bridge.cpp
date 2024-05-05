@@ -37,40 +37,75 @@ void bindUiMt()
 int widget_new(lua_State* L)
 {
     const char* widget_name;
-    lua_CFunction init_func;
-    lua_CFunction render_func;
+    lua_CFunction init_func = nullptr;
+    lua_CFunction render_func = nullptr;
     
-    if (lua_istable(L, -2))
+    if (lua_istable(L, -1))
     {
-        if (lua_getfield(L, -2, "name") == LUA_TSTRING)
+        printf("is a table\n");
+
+        // Get the 'name' field
+        lua_getfield(L, -1, "name");
+        if (lua_isstring(L, -1))
         {
+            printf("name\n");
             widget_name = lua_tostring(L, -1);
         } else{
-            lua_pop(L, -1);
+            printf("name field is not a string\n");
+            lua_pop(L, 1);
             return 0;
         }
-        if (lua_getfield(L, -2, "init") == LUA_TFUNCTION)
+        lua_pop(L, 1);
+
+        // Get the 'init' field
+        lua_getfield(L, -1, "init");
+        if (lua_isfunction(L, -1))
         {
+            printf("init\n");
             init_func = lua_tocfunction(L, -1);
         } else {
-            lua_pop(L, -1);
+            printf("init field is not a function\n");
+            lua_pop(L, 1);
             return 0;
         }
-        if (lua_getfield(L, -2, "render") == LUA_TFUNCTION)
+        lua_pop(L, 1);
+
+        // Get the 'render' field
+        lua_getfield(L, -1, "render");
+        if (lua_isfunction(L, -1))
         {
+            printf("render\n");
             render_func = lua_tocfunction(L, -1);
         } else {
-            lua_pop(L, -1);
+            printf("render field is not a function\n");
+            lua_pop(L, 1);
             return 0;
         }
+        lua_pop(L, 1);
+
+        // Create and return the widget
         LuaWidget* widget = new LuaWidget(widget_name);
         lua_pushlightuserdata(L, widget);
         luaL_getmetatable(L, WIDGET_MT);
         lua_setmetatable(L, -2);
         return 1;
     }
+    printf("not a table\n");
     return 0;
 }
+
+int widget_register(lua_State* L)
+{
+    auto widget = luaL_checklightuserdata<LuaWidget>(L, -1);
+    if (widget != nullptr)
+    {
+        ui::RegisterWidget(widget);
+        return 0;
+    }else {
+        return 0;
+    }
+}
+
 static const luaL_Reg widget_funcs[]
 {
     {"new", widget_new},{NULL, NULL}
@@ -149,5 +184,11 @@ int lua_bindings::register_ui_bridge(lua_State* L)
     create_lua_mt(L, WIDGET_MT, widget_m);
     create_lua_mt(L, UI_MT, ui_m);
     register_global_table_with_mt(L, "ui", UI_MT);
+    lua_getglobal(L, "ui");
+    lua_pushcfunction(L, widget_new, "new");
+    lua_setfield(L, -2, "new_widget");
+    lua_pushcfunction(L, widget_register, "register");
+    lua_setfield(L, -2, "register_widget");
+    lua_pop(L, -1);
     return 0;
 }

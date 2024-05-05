@@ -5,6 +5,7 @@
 #include <lualib.h>
 #include <luacode.h>
 #include "../../Lua/LuaVM.hpp"
+#include "../../Lua/LuaClosure.hpp"
 
 class LuaWidget : public Widget
 {
@@ -13,27 +14,27 @@ class LuaWidget : public Widget
     
     void Init() override
     {
-        init_lua(LuaVM::get()->LuaState());
+        init_lua.CallFunc(LuaVM::get()->LuaState());
     }
 
     void Render() override
     {
-        render_lua(LuaVM::get()->LuaState());
+        render_lua.CallFunc(LuaVM::get()->LuaState());
     }
 
-    void SetInit(lua_CFunction func)
+    void SetInit(LuaClosure func)
     {
         init_lua = func;
     }
 
-    void SetRender(lua_CFunction func)
+    void SetRender(LuaClosure func)
     {
         render_lua = func;
     }
 
     private:
-    lua_CFunction init_lua;
-    lua_CFunction render_lua;
+    LuaClosure init_lua;
+    LuaClosure render_lua;
 };
 
 #endif

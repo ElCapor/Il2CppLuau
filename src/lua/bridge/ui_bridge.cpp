@@ -37,8 +37,8 @@ void bindUiMt()
 int widget_new(lua_State* L)
 {
     const char* widget_name;
-    lua_CFunction init_func = nullptr;
-    lua_CFunction render_func = nullptr;
+    LuaClosure init_func;
+    LuaClosure render_func;
     
     if (lua_istable(L, -1))
     {
@@ -62,7 +62,7 @@ int widget_new(lua_State* L)
         if (lua_isfunction(L, -1))
         {
             printf("init\n");
-            init_func = lua_tocfunction(L, -1);
+            init_func.ref = lua_ref(L, -1);
         } else {
             printf("init field is not a function\n");
             lua_pop(L, 1);
@@ -75,7 +75,7 @@ int widget_new(lua_State* L)
         if (lua_isfunction(L, -1))
         {
             printf("render\n");
-            render_func = lua_tocfunction(L, -1);
+            render_func.ref = lua_ref(L, -1);
         } else {
             printf("render field is not a function\n");
             lua_pop(L, 1);
@@ -85,6 +85,8 @@ int widget_new(lua_State* L)
 
         // Create and return the widget
         LuaWidget* widget = new LuaWidget(widget_name);
+        widget->SetInit(init_func);
+        widget->SetRender(render_func);
         lua_pushlightuserdata(L, widget);
         luaL_getmetatable(L, WIDGET_MT);
         lua_setmetatable(L, -2);
@@ -156,7 +158,7 @@ static const luaL_Reg widget_m[]
 
 int widgets_ui(lua_State* L)
 {
-    return vec2table<Widget>(L, ui::m_Widgets);
+    return vec2table<Widget>(L, ui::m_Widgets.getCurrentBuffer());
 }
 
 static const luaL_Reg ui_fields[] =

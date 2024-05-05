@@ -1,6 +1,8 @@
 #include "lextra.h"
 #include <utility>
 #include <string>
+#include "LuaClosure.hpp"
+LuaClosureID LuaClosure::maxID = 0;
 
 /// @brief Creates a new lua metatable based on the provided functions
 /// @param L Lua State

@@ -5,11 +5,14 @@
 #include <UnityResolve/UnityResolve.hpp>
 #include "../lextra.h"
 #include "../mt_map.h"
+
 #define ASSEMBLY_MT_NAME "assembly.mt"
 #define IL2CPP_MT_NAME "il2cpp.mt"
 #define CLASS_MT_NAME "class.mt"
 #define FIELD_MT_NAME "field.mt"
 #define METHOD_MT_NAME "method.mt"
+#define TYPE_MT_NAME "type.mt"
+#define ARG_MT_NAME "arg.mt"
 
 /// @brief Bind all metatables of the bridge globally
 void bindMt()
@@ -18,7 +21,82 @@ void bindMt()
     INSERT_MT(UnityResolve::Class, CLASS_MT_NAME);
     INSERT_MT(UnityResolve::Method, METHOD_MT_NAME);
     INSERT_MT(UnityResolve::Field, FIELD_MT_NAME);
+    INSERT_MT(UnityResolve::Type, TYPE_MT_NAME);
+    INSERT_MT(UnityResolve::Method::Arg, ARG_MT_NAME);
+
 }
+
+int type_arg(lua_State* L)
+{
+    auto arg = luaL_checklightuserdata<UnityResolve::Method::Arg>(L, -2);
+    if (arg != nullptr)
+    {
+        return luaL_pushlightuserdata<UnityResolve::Type>(L, arg->pType);
+    }
+    else {
+        return 0;
+    }
+}
+
+int name_arg(lua_State* L)
+{
+    auto arg = luaL_checklightuserdata<UnityResolve::Method::Arg>(L, -2);
+    if (arg != nullptr)
+    {
+        lua_pushstring(L, arg->name.c_str());
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+static const luaL_Reg arg_fields[]
+{
+    {"name", name_arg}, {"type", type_arg},{NULL, NULL}
+};
+
+int index_arg(lua_State* L)
+{
+    const char* key = luaL_checkstring(L, -1);
+    auto ret = indexFields(L, arg_fields, key);
+    if (ret.second)
+        return ret.first;
+    return 0;
+}
+static const luaL_Reg arg_m[]
+{
+    {"__index", index_arg}, {NULL, NULL}
+};
+
+int name_type(lua_State* L)
+{
+    auto type = luaL_checklightuserdata<UnityResolve::Type>(L, -2);
+    if (type != nullptr)
+    {
+        lua_pushstring(L, type->name.c_str());
+        return 1;
+    }
+    return 0;
+}
+static const luaL_Reg type_fields[]
+{
+    {"name", name_type},{NULL,NULL}
+};
+
+int index_type(lua_State* L)
+{
+    const char* key = luaL_checkstring(L, -1);
+    auto ret = indexFields(L, type_fields, key);
+    if (ret.second)
+        return ret.first;
+    return 0;
+}
+
+static const luaL_Reg type_m[]
+{
+    {"__index", index_type},{NULL, NULL}
+};
 
 /// @brief __index of method metatable
 /// @param L Lua State
@@ -49,8 +127,34 @@ int name_method(lua_State *L)
     }
 }
 
+int return_type_method(lua_State* L)
+{
+    auto method = luaL_checklightuserdata<UnityResolve::Method>(L, -2);
+    if (method!= nullptr)
+    {
+        return luaL_pushlightuserdata<UnityResolve::Type>(L, method->return_type);
+    }
+    else {
+        return 0;
+    }
+}
+/*
+local is = il2cpp.assemblies[1].classes[2]
+print(is.methods[2].return_type.name)
+*/
+int args_method(lua_State* L)
+{
+    auto method = luaL_checklightuserdata<UnityResolve::Method>(L, -2);
+    if (method != nullptr)
+    {
+        return vec2table<UnityResolve::Method::Arg>(L, method->args);
+    }
+    else {
+        return 0;
+    }
+}
 static const luaL_Reg method_fields[]{
-    {"name", name_method}, {NULL, NULL}};
+    {"name", name_method}, {"return_type", return_type_method}, {"args", args_method}, {NULL, NULL}};
 
 /// @brief __index of method metatable
 /// @param L Lua State
@@ -226,6 +330,8 @@ int lua_bindings::register_il2cpp_bridge(lua_State *L)
     create_lua_mt(L, CLASS_MT_NAME, class_m);
     create_lua_mt(L, FIELD_MT_NAME, field_m);
     create_lua_mt(L, METHOD_MT_NAME, method_m);
+    create_lua_mt(L, TYPE_MT_NAME, type_m);
+    create_lua_mt(L, ARG_MT_NAME, arg_m);
     create_lua_mt(L, IL2CPP_MT_NAME, il2cpp_m);
     register_global_table_with_mt(L, "il2cpp", IL2CPP_MT_NAME);
     bindMt();

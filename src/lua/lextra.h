@@ -36,6 +36,28 @@ T *luaL_checklightuserdata(lua_State *L, int idx)
     }
 }
 
+template <typename T>
+int luaL_pushlightuserdata(lua_State* L, T* data, const char* mt_name = "")
+{
+    if (data != nullptr)
+    {
+        lua_pushlightuserdata(L, data);
+        auto mt = getMetatable<T>();
+        if (mt!="")
+        {
+            luaL_getmetatable(L, mt.c_str());
+            lua_setmetatable(L, -2);
+            return 1;
+        } else {
+            luaL_getmetatable(L, mt_name);
+            lua_setmetatable(L, -2);
+            return 1;
+        }
+    } else {
+        return 0;
+    }
+}
+
 void create_lua_mt(lua_State *L, const char *mt_name, const luaL_Reg *m_reg);
 
 void register_global_table_with_mt(lua_State *L, const char *table_name, const char *mt_name);

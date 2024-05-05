@@ -6,7 +6,7 @@
 #include <iostream>
 #include "ui.hpp"
 extern auto ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) -> LRESULT;
-std::vector<Widget*> ui::m_Widgets = {};
+DoubleBuffer<Widget*> ui::m_Widgets = {};
 int ui::ui_idx = 0;
 void ui::InitUi()
 {
@@ -159,7 +159,7 @@ void ui::InitUi()
     ImGui::NewFrame();
     if (GlobalsManager::get()->ShowGui())
     {
-        for (auto& widget : m_Widgets)
+        for (auto& widget : m_Widgets.getCurrentBuffer())
         {
             if (!widget->IsInit())
             {
@@ -184,8 +184,8 @@ void ui::HookDX11()
 #include "widgets/ExecutorWidget.hpp"
 void ui::RegisterWidgets()
 {
-    m_Widgets.push_back(ExecutorWidget::get());
-    for (auto& widget : m_Widgets)
+    m_Widgets.push(ExecutorWidget::get());
+    for (auto& widget : m_Widgets.getCurrentBuffer())
     {
         widget->setId(ui_idx);
         ui_idx++;
@@ -194,8 +194,13 @@ void ui::RegisterWidgets()
 
 void ui::RegisterWidget(Widget* widget)
 {
+    std::vector<Widget*> tmp = m_Widgets.getCurrentBuffer();
     widget->setId(ui_idx);
     ui_idx++;
-    std::unique_lock<std::shared_mutex> lock(widgetsMutex);
-    m_Widgets.push_back(widget);
+    m_Widgets.swapBuffers();
+    m_Widgets.push(widget);
+    for (auto& item : tmp)
+    {
+        m_Widgets.push(item);
+    }
 }

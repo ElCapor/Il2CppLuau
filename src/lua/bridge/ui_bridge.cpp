@@ -3,6 +3,7 @@
 */
 #include "ui_bridge.h"
 #include "../lextra.h"
+#include "../../ui/ui.hpp"
 #include "../../ui/widgets/LuaWidget.hpp"
 #include "../mt_map.h"
 #include <new>

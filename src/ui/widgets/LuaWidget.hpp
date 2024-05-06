@@ -1,6 +1,6 @@
 #ifndef LUA_WIDGET_HPP
 #define LUA_WIDGET_HPP
-#include "../ui.hpp"
+#include "../widget.hpp"
 #include <lua.h>
 #include <lualib.h>
 #include <luacode.h>

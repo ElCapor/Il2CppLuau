@@ -16,6 +16,8 @@ public:
 
     void Shutdown();
 
+    ImGuiManager& GetGuiManager() { return m_guiManager;}
+
 private:
     bool m_initialized;
     SDL_Window *window;

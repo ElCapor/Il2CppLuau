@@ -27,7 +27,16 @@ void ImGuiManager::Render(SDL_Window *window, SDL_Renderer *renderer) {
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::ShowDemoWindow();
+    for (auto& widget : m_Widgets.getCurrentBuffer())
+    {
+        if (!widget->IsInit())
+        {
+            widget->Init();
+            widget->IsInit() = true;
+        }
+        widget->Render();
+    }
+
     // Rendering
     ImGui::Render();
     SDL_RenderSetScale(renderer, DisplayFramebufferScale.x, DisplayFramebufferScale.y);
@@ -40,4 +49,16 @@ void ImGuiManager::Cleanup() {
     ImGui_ImplSDLRenderer2_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
+}
+
+void ImGuiManager::AddWidget(Widget *widget) {
+    std::vector<Widget*> tmp = m_Widgets.getCurrentBuffer();
+    widget->setId(w_idx);
+    w_idx++;
+    m_Widgets.swapBuffers();
+    m_Widgets.push(widget);
+    for (auto& item : tmp)
+    {
+        m_Widgets.push(item);
+    }
 }

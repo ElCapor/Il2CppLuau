@@ -4,6 +4,8 @@
 #include <imgui/backends/imgui_impl_sdl2.h>
 #include <imgui/backends/imgui_impl_sdlrenderer2.h>
 #include <SDL.h>
+#include "../ui/widget.hpp"
+#include "../utils/double_buffer.hpp"
 /*
 * UI Manager for the sandbox app
 */
@@ -19,8 +21,12 @@ public:
     
     void Cleanup();
 
+    void AddWidget(Widget* widget);
+
 private:
     ImVec2 DisplayFramebufferScale = {0,0};
+    DoubleBuffer<Widget*> m_Widgets;
+    int w_idx = -1;
 };
 
 #endif

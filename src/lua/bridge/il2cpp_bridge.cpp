@@ -164,7 +164,7 @@ int index_field(lua_State *L)
     auto ret = indexFields(L, field_fields, key);
     if (ret.second)
         return ret.first;
-        
+
     return 0;
 }
 
@@ -383,6 +383,24 @@ static const luaL_Reg il2cpp_m[] =
     {"__newindex", newindex_il2cpp}, {"__index", index_il2cpp}, {NULL, NULL}
 };
 
+#include <luau/VM/src/lobject.h>
+#include <luau/VM/src/lapi.h>
+#include <luau/VM/src/lstate.h>
+int proto_inspector(lua_State* L)
+{
+    if (lua_isLfunction(L, -1))
+    {
+        const TValue* func = luaA_toobject(L, -1);
+        Proto* proto = clvalue(func)->l.p;
+        Console::get()->log("Proto : ", proto->numparams);
+        for (int i = 0; i<proto->sizetypeinfo; i++)
+        {
+            Console::get()->log("Typeinfo ", proto->typeinfo[i]);
+        }
+    }
+    return 0;
+}
+
 /// @brief Registers il2cpp library in lua
 /// @param L Lua State
 /// @return 0
@@ -397,5 +415,7 @@ int lua_bindings::register_il2cpp_bridge(lua_State *L)
     create_lua_mt(L, IL2CPP_MT_NAME, il2cpp_m);
     register_global_table_with_mt(L, "il2cpp", IL2CPP_MT_NAME);
     bindMt();
+    lua_pushcfunction(L, proto_inspector, "proto_inspector");
+    lua_setglobal(L, "proto_inspector");
     return 0;
 }

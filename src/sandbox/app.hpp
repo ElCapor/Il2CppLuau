@@ -1,6 +1,7 @@
 #ifndef APP_HPP
 #define APP_HPP
 #include "../utils/singleton.hpp"
+#include "../utils/progress_manager.hpp"
 #include "gui.hpp"
 #include <stdio.h>
 #include <SDL.h>

@@ -43,7 +43,9 @@ void LuaVM::SetupState(lua_State *L) {
 }
 
 void LuaVM::RegisterFunctions(lua_State *L) {
+    #ifndef SANDBOX
     lua_bindings::register_il2cpp_bridge(L);
+    #endif
     lua_bindings::register_ui_bridge(L);
 }
 

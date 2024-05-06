@@ -1,3 +1,6 @@
+# Work note
+check feature-global-state
+and feature-sandbox branches to see current work
 # IL2CPP Lua
 Lua Implementation of UnityResolve.hpp
 Opens an UI in game where you can write luau scripts

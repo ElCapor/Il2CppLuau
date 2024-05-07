@@ -5,6 +5,7 @@
 
 #include <texteditor/TextEditor.h>
 #include "../../lua/LuaVM.hpp"
+#include <string>
 class ExecutorWidget : public Widget, public Singleton<ExecutorWidget>
 {
     TextEditor editor;
@@ -25,6 +26,22 @@ class ExecutorWidget : public Widget, public Singleton<ExecutorWidget>
                 auto str = LuaVM::get()->executeScript(editor.GetText());
                 if (str != "")
                     Console::get()->error(str);
+            }
+            if (ImGui::Button("auto complete"))
+            {
+                lua_State* L = LuaVM::get()->LuaState();
+                lua_getglobal(L, "_G");
+                int tbl = lua_gettop(L);
+                /* table is in the stack at index 't' */
+                lua_pushnil(L);  /* first key */
+                while (lua_next(L, t) != 0) {
+                /* uses 'key' (at index -2) and 'value' (at index -1) */
+                printf("%s - %s\n",
+                        lua_typename(L, lua_type(L, -2)),
+                        lua_typename(L, lua_type(L, -1)));
+                /* removes 'value'; keeps 'key' for next iteration */
+                lua_pop(L, 1);
+            }
             }
             editor.Render("Executor");
             ImGui::End();

@@ -1,5 +1,5 @@
-# feature-global-lua-state branch
-When writing lua widgets, i figured out that I needed a global state for the whole dll, instead of creating a new one each time i want to run a script. Since it's a breaking change , it deserves a whole branch for it.
+# sandbox branch
+This is where i'm attempting to implement complicated features such as auto completing, lua type resolution, lua hooking
 
 # IL2CPP Lua
 Lua Implementation of UnityResolve.hpp

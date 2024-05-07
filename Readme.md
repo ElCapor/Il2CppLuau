@@ -1,6 +1,9 @@
 # sandbox branch
 This is where i'm attempting to implement complicated features such as auto completing, lua type resolution, lua hooking
 
+Auto complete : implement a mini parser
+Type resolution : find a way to have typeinfos in protos
+
 # IL2CPP Lua
 Lua Implementation of UnityResolve.hpp
 Opens an UI in game where you can write luau scripts

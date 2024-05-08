@@ -61,7 +61,7 @@ package("polyhook")
         local configs = {}
         table.insert(configs, "-DPOLYHOOK_BUILD_SHARED_LIB=OFF")
         import("package.tools.cmake").install(package, configs, {buildir="build"})
-        local libs = {"PolyHook_2"}
+        local libs = {"PolyHook_2", "asmjit", "asmtk", "zydis"}
         for _,link in ipairs(libs) do 
             package:add("links", link)
         end
@@ -69,6 +69,7 @@ package("polyhook")
 package_end()
 add_requires("polyhook")
 add_requires("libsdl")
+add_requires("asmjit")
 target("sandbox")
     set_kind("binary")
     add_ldflags("cl::-subsystem:windows")
@@ -92,4 +93,5 @@ target("sandbox")
     add_packages("luau")
     add_packages("libsdl")
     add_packages("polyhook")
+    add_packages("asmjit")
 target_end()

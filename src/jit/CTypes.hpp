@@ -1,37 +1,47 @@
 #ifndef CTypes_HPP
 #define CTypes_HPP
+#include <string>
+#include <cstdint>
 
+#define SETTYPE(tp) CType m_CType = CType::CType_##tp
+#define SETNAME(name) std::string GetName() const override \
+{ \
+return #name;\
+} \
+
+/*
+* Code
+*/
+namespace jit
+{
 // Base class for all types
-class CType {
-public:
-    virtual std::string getName() const = 0;
-    virtual int getAsmJitTypeId() const = 0;
-    virtual const CType* getCType() const = 0;
+enum class CType
+{
+    CType_None,
+    CType_Void,
+    CType_Int,
+    CType_MAX
 };
 
-// Derived class for int type
-class IntCType : public CType {
+int CType2AsmTypeId(CType type);
+
+// abstract CContainer exposed to lua
+class CContainer 
+{
 public:
-    std::string getName() const override { return "int"; }
-    int getAsmJitTypeId() const override { return 0; } // Dummy implementation
-    const CType* getCType() const override { return this; }
+    SETTYPE(None); // type of the container
+    virtual std::string GetName() const = 0;
 };
 
-// Derived class for void type
-class VoidCType : public CType {
+class VoidContainer : public CContainer
+{
 public:
-    std::string getName() const override { return "void"; }
-    int getAsmJitTypeId() const override { return 0; } // Dummy implementation
-    const CType* getCType() const override { return this; }
+    SETTYPE(Void);
+    SETNAME(void);
+    void* self; // value
+    void* GetValue() {return self;}
+    void SetValue(void* value) {self = value;}
 };
 
-// Derived class for string type
-class StringCType : public CType {
-public:
-    std::string getName() const override { return "string"; }
-    int getAsmJitTypeId() const override { return 0; } // Dummy implementation
-    const CType* getCType() const override { return this; }
-};
-
-
+}
 #endif

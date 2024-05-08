@@ -53,6 +53,21 @@ target("Il2CppLuau")
     -- TODO : Add source dir from package
 target_end()
 
+
+package("polyhook")
+    set_sourcedir(path.join(os.scriptdir(), "extern/vendor/polyhook"))
+    add_deps("cmake")
+    on_install("windows", function(package)
+        local configs = {}
+        table.insert(configs, "-DPOLYHOOK_BUILD_SHARED_LIB=OFF")
+        import("package.tools.cmake").install(package, configs, {buildir="build"})
+        local libs = {"PolyHook_2"}
+        for _,link in ipairs(libs) do 
+            package:add("links", link)
+        end
+    end)
+package_end()
+add_requires("polyhook")
 add_requires("libsdl")
 target("sandbox")
     set_kind("binary")
@@ -76,4 +91,5 @@ target("sandbox")
     add_includedirs("extern/vendor/luau/Compiler/include", "extern/vendor/luau/Common/include", "extern/vendor/luau/Ast/include")
     add_packages("luau")
     add_packages("libsdl")
+    add_packages("polyhook")
 target_end()

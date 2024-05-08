@@ -10,3 +10,6 @@
 [submodule "extern/vendor/texteditor"]
 	path = extern/vendor/texteditor
 	url = https://github.com/ElCapor/ImGuiColorTextEdit.git
+[submodule "extern/vendor/polyhook"]
+	path = extern/vendor/polyhook
+	url = https://github.com/stevemk14ebr/PolyHook_2_0.git

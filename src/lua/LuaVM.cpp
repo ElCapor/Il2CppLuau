@@ -53,8 +53,9 @@ static Luau::CompileOptions copts()
 {
     Luau::CompileOptions result = {};
     result.optimizationLevel = 0;
-    result.debugLevel = 0;
-
+    result.debugLevel = 2;
+    result.typeInfoLevel = 1;
+    result.coverageLevel = 2;
     return result;
 }
 

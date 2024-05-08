@@ -5,12 +5,15 @@
 
 #include <texteditor/TextEditor.h>
 #include "../../lua/LuaVM.hpp"
-#include <string>
+
+std::vector<std::string> cacheGlobals();
+std::vector<std::string> matches(std::string prefix);
 class ExecutorWidget : public Widget, public Singleton<ExecutorWidget>
 {
     TextEditor editor;
-    public:
-    ExecutorWidget() { setName("ExecutorWidget");}
+
+public:
+    ExecutorWidget() { setName("ExecutorWidget"); }
     void Init() override
     {
         Console::get()->log("Starting editor widget");
@@ -27,28 +30,19 @@ class ExecutorWidget : public Widget, public Singleton<ExecutorWidget>
                 if (str != "")
                     Console::get()->error(str);
             }
-            if (ImGui::Button("auto complete"))
+            if (ImGui::Button("Autocomplete"))
             {
-                lua_State* L = LuaVM::get()->LuaState();
-                lua_getglobal(L, "_G");
-                int tbl = lua_gettop(L);
-                /* table is in the stack at index 't' */
-                lua_pushnil(L);  /* first key */
-                while (lua_next(L, t) != 0) {
-                /* uses 'key' (at index -2) and 'value' (at index -1) */
-                printf("%s - %s\n",
-                        lua_typename(L, lua_type(L, -2)),
-                        lua_typename(L, lua_type(L, -1)));
-                /* removes 'value'; keeps 'key' for next iteration */
-                lua_pop(L, 1);
-            }
+                for (auto& match : matches(editor.GetText()))
+                {
+                    Console::get()->log(match);
+                }
             }
             editor.Render("Executor");
             ImGui::End();
         }
     }
 
-    TextEditor& GetEditor()
+    TextEditor &GetEditor()
     {
         return editor;
     }

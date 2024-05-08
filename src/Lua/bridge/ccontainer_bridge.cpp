@@ -6,7 +6,7 @@
 #include "../mt_map.h"
 #include "../lextra.h"
 
-void bindMt()
+void bindContainerMt()
 {
     INSERT_MT(jit::CContainer, "ccontainer.mt");
     INSERT_MT(jit::VoidContainer, "void.mt");
@@ -74,7 +74,7 @@ void create_void_tbl(lua_State* L)
 
 int lua_bindings::register_ccontainer_bridge(lua_State* L)
 {
-    bindMt();
+    bindContainerMt();
     create_lua_mt(L, getMetatable<jit::VoidContainer>().c_str(), void_m);
     create_void_tbl(L);
     return 0;

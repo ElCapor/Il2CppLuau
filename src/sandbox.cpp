@@ -9,7 +9,6 @@
 #include <polyhook/asmjit/src/asmjit/asmjit.h>
 
 
-
 // Jit construction runtime
 asmjit::JitRuntime m_Runtime;
 

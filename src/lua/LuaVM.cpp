@@ -8,6 +8,8 @@
 #include <iostream>
 #include "bridge/il2cpp_bridge.h"
 #include "bridge/ui_bridge.h"
+#include <Lua/bridge/ccontainer_bridge.h>
+
 
 
 LuaVM::LuaVM() {}
@@ -47,6 +49,7 @@ void LuaVM::RegisterFunctions(lua_State *L) {
     lua_bindings::register_il2cpp_bridge(L);
     #endif
     lua_bindings::register_ui_bridge(L);
+    lua_bindings::register_ccontainer_bridge(L);
 }
 
 static Luau::CompileOptions copts()

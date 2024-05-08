@@ -49,3 +49,11 @@ target("Il2CppLuau")
     add_includedirs("extern/vendor/luau/Compiler/include", "extern/vendor/luau/Common/include", "extern/vendor/luau/Ast/include")
     add_packages("luau")
     -- TODO : Add source dir from package
+target_end()
+
+target("injector")
+    set_kind("binary")
+    set_languages("cxx20")
+    add_files("injector/**.cpp")
+    add_links("user32", "winmm", "comdlg32", "ole32")
+target_end()

@@ -7,12 +7,13 @@
 #include <polyhook/polyhook2/Detour/ILCallback.hpp>
 #include <algorithm>
 #include <polyhook/asmjit/src/asmjit/asmjit.h>
-
+#include "Lua/lextra.h"
+#include "jit/CTypes.hpp"
 
 // Jit construction runtime
 asmjit::JitRuntime m_Runtime;
 
-int sami_tyrode(lua_State* L)
+int type_stack(lua_State* L)
 {
     // Check if there is exactly 1 argument
     if (lua_gettop(L) != 1) {
@@ -28,6 +29,17 @@ int sami_tyrode(lua_State* L)
     printf("Type of argument: %s\n", typeName);
 
     // No return value
+    return 0;
+}
+
+
+int get_jit(lua_State* L)
+{
+    int n = lua_gettop(L);
+    for (int i =1; i <=n; i++)
+    {
+        printf("%s\n", lua_type(L, i));
+    }
     return 0;
 }
 
@@ -47,8 +59,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     LuaVM::get()->InitVM();
     lua_State* L = LuaVM::get()->LuaState();
     App::get()->GetGuiManager().AddWidget(new ExecutorWidget());
-    lua_pushcfunction(L, sami_tyrode, "sami_tyrode");
-    lua_setglobal(L, "sami");
+    lua_pushcfunction(L, type_stack, "type_stack");
+    lua_setglobal(L, "type_stack");
+    lua_pushcfunction(L, get_jit, "get_jit");
+    lua_setglobal(L, "get_jit");
     App::get()->Run();
     return 0;
 }

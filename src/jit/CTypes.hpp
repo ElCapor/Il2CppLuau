@@ -2,6 +2,7 @@
 #define CTypes_HPP
 #include <string>
 #include <cstdint>
+#include <polyhook/asmjit/src/asmjit/asmjit.h>
 
 #define SETTYPE(tp) CType m_CType = CType::CType_##tp
 #define SETNAME(name) std::string GetName() const override \
@@ -18,12 +19,14 @@ namespace jit
 enum class CType
 {
     CType_None,
-    CType_Void,
-    CType_Int,
+    CType_Void, // no value
+    CType_VoidPtr, // void* ptr
+    CType_Int, //int
+    CType_Bool, // bool
     CType_MAX
 };
 
-int CType2AsmTypeId(CType type);
+asmjit::TypeId CType2AsmTypeId(CType type);
 
 // abstract CContainer exposed to lua
 class CContainer 
@@ -33,11 +36,11 @@ public:
     virtual std::string GetName() const = 0;
 };
 
-class VoidContainer : public CContainer
+class VoidPtrContainer : public CContainer
 {
 public:
-    SETTYPE(Void);
-    SETNAME(void);
+    SETTYPE(VoidPtr);
+    SETNAME(voidptr);
     void* self; // value
     void* GetValue() {return self;}
     void SetValue(void* value) {self = value;}

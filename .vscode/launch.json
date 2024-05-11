@@ -12,6 +12,20 @@
             "logging": {
                 "trace": true
             }
+        },
+        {
+            "name" : "Launch",
+            "type" :"cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/build/windows/x64/debug/sandbox.exe",
+            "logging": {
+                "trace": true
+            },
+            "cwd": "${workspaceRoot}",
+            "symbolOptions": {
+                "searchPaths": [],
+                "searchMicrosoftSymbolServer": true
+            }
         }
     ]
 }
